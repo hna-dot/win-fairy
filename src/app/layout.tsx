@@ -1,6 +1,7 @@
 import { Analytics } from "@vercel/analytics/next";
 import type { Metadata, Viewport } from "next";
 import { Chakra_Petch, IBM_Plex_Mono, Noto_Serif_KR } from "next/font/google";
+import Script from "next/script";
 import "./globals.css";
 
 const chakraPetch = Chakra_Petch({
@@ -55,6 +56,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className="min-h-screen">
         {children}
         <Analytics />
+        <Script
+          async
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4056187987785109"
+          crossOrigin="anonymous"
+          strategy="beforeInteractive"
+        />
       </body>
     </html>
   );
