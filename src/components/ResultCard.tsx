@@ -101,12 +101,16 @@ function RarityRow({ accent, label, result }: { accent: Accent; label: string; r
   );
 }
 
+const EVIDENCE_MAX_ROWS = 8;
+
 function EvidenceBlock({ teamId, result }: { teamId: string; result: AnalysisOutput }) {
   if (!result.coveredDates || result.coveredDates.length === 0) return null;
   const isFullSweep = result.status === "완전승요";
+  const shownDates = result.coveredDates.slice(0, EVIDENCE_MAX_ROWS);
+  const hiddenCount = result.coveredDates.length - shownDates.length;
   return (
     <div className="mt-[9px] space-y-[3px] border-t border-dashed border-line pt-[9px] text-[10px] leading-[1.8] text-[#4a4636]">
-      {result.coveredDates.map((date) => {
+      {shownDates.map((date) => {
         const kboGame = getGameOnDate(teamId, date);
         if (isFullSweep) {
           const row = buildFullVerdictEvidenceRow(date, kboGame);
@@ -126,6 +130,7 @@ function EvidenceBlock({ teamId, result }: { teamId: string; result: AnalysisOut
           </div>
         );
       })}
+      {hiddenCount > 0 && <div className="text-[#8a8266]">외 {hiddenCount}경기 더</div>}
     </div>
   );
 }

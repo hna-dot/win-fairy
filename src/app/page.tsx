@@ -56,6 +56,7 @@ function ShareIcon() {
 }
 
 const IMAGE_ERROR_MESSAGE = "이미지 발급에 실패했습니다. 다시 시도해도 안 되면 다른 브라우저를 이용해주세요.";
+const NO_SHARE_SHEET_MESSAGE = "이 브라우저는 공유 시트를 지원하지 않습니다. 이미지로 저장해 직접 공유해주세요.";
 const LOADING_DURATION_MS = 2200;
 
 function Toast({ message }: { message: string }) {
@@ -178,6 +179,7 @@ export default function Home() {
         link.href = url;
         link.click();
         URL.revokeObjectURL(url);
+        showToast(NO_SHARE_SHEET_MESSAGE);
       }
       track("공유하기", { team: team.id });
     } catch (err) {

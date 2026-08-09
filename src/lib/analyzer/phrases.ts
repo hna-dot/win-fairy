@@ -7,7 +7,7 @@ export function featureToPhrase(fname: string): string {
 
   if (fname.startsWith("월일자체_숫자") && fname.endsWith("포함")) {
     const n = fname.replace("월일자체_숫자", "").replace("포함", "");
-    return `월 또는 일 자체에 ${n}이 들어가면`;
+    return `월 또는 일에 ${n}이 들어가면`;
   }
   if (fname.startsWith("월일덧셈_숫자") && fname.endsWith("포함")) {
     const n = fname.replace("월일덧셈_숫자", "").replace("포함", "");
