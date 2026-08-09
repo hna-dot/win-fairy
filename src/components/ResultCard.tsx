@@ -270,8 +270,8 @@ const ResultCard = forwardRef<HTMLDivElement, Props>(function ResultCard({ team,
             <div className="relative">
               <VerdictBlock result={result} accent={meta.accent} />
               {stampException && (
-                <div className="pointer-events-none absolute top-0 right-0 opacity-95">
-                  <StampSeal accent={meta.accent} size={80} />
+                <div className="pointer-events-none absolute -bottom-3 right-0 opacity-95">
+                  <StampSeal accent={meta.accent} size={110} />
                 </div>
               )}
             </div>
