@@ -267,7 +267,14 @@ const ResultCard = forwardRef<HTMLDivElement, Props>(function ResultCard({ team,
           <HoldBody result={result} />
         ) : (
           <>
-            <VerdictBlock result={result} accent={meta.accent} />
+            <div className="relative">
+              <VerdictBlock result={result} accent={meta.accent} />
+              {stampException && (
+                <div className="pointer-events-none absolute -bottom-3 right-0 opacity-95">
+                  <StampSeal accent={meta.accent} size={110} />
+                </div>
+              )}
+            </div>
             <StatRow
               big={
                 result.status === "패배방지"
@@ -293,11 +300,7 @@ const ResultCard = forwardRef<HTMLDivElement, Props>(function ResultCard({ team,
           {breakAfter(footerNote(result), ",")}
         </div>
 
-        {stampException ? (
-          <div className="pointer-events-none absolute right-[8px] bottom-[2px] opacity-95">
-            <StampSeal accent={meta.accent} size={137} />
-          </div>
-        ) : (
+        {!stampException && (
           <div className="pointer-events-none absolute top-[44px] right-[10px] opacity-95">
             <StampSeal accent={meta.accent} size={124} />
           </div>
