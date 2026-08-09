@@ -106,8 +106,9 @@ const EVIDENCE_MAX_ROWS = 6;
 function EvidenceBlock({ teamId, result }: { teamId: string; result: AnalysisOutput }) {
   if (!result.coveredDates || result.coveredDates.length === 0) return null;
   const isFullSweep = result.status === "완전승요";
-  const shownDates = result.coveredDates.slice(0, EVIDENCE_MAX_ROWS);
-  const hiddenCount = result.coveredDates.length - shownDates.length;
+  const datesNewestFirst = [...result.coveredDates].sort((a, b) => b.localeCompare(a));
+  const shownDates = datesNewestFirst.slice(0, EVIDENCE_MAX_ROWS);
+  const hiddenCount = datesNewestFirst.length - shownDates.length;
   return (
     <div className="mt-[9px] space-y-[3px] border-t border-dashed border-line pt-[9px] text-[10px] leading-[1.8] text-[#4a4636]">
       {shownDates.map((date) => {
