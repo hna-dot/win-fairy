@@ -23,13 +23,13 @@ const ibmPlexMono = IBM_Plex_Mono({
 
 const SITE_URL = "https://win-fairy.vercel.app";
 const SITE_TITLE = "승요 판독기";
-const SITE_DESCRIPTION = "직관간 날짜를 넣으면 억지로라도 승요를 찾아드립니다.";
+const SITE_DESCRIPTION = "당신은 승요가 맞습니다. 우리가 그렇게 만들 거니까요. 직관간 날짜만 입력하세요.";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: SITE_TITLE,
   description: SITE_DESCRIPTION,
-  keywords: ["KBO", "승요", "직관", "프로야구", "야구", "승요 판독기"],
+  keywords: ["KBO", "승요", "직관", "프로야구", "야구", "승요 판독기", "직관 기록", "승리요정"],
   openGraph: {
     title: SITE_TITLE,
     description: SITE_DESCRIPTION,
