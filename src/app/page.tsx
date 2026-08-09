@@ -165,7 +165,11 @@ export default function Home() {
 
       const nav = navigator as Navigator & { canShare?: (data?: ShareData) => boolean };
       if (nav.share && nav.canShare?.({ files: [file] })) {
-        await nav.share({ files: [file], title: "승요 판독기", text: "내 직관 승요 판독 결과" });
+        await nav.share({
+          files: [file],
+          title: "승요 판독기",
+          text: "내 직관 승요 조건은?\n#승요판독기 #직관기록\nhttps://win-fairy.vercel.app/",
+        });
       } else {
         // 공유 시트를 지원하지 않는 브라우저(주로 데스크톱)는 이미지 저장으로 대체
         const url = URL.createObjectURL(blob);

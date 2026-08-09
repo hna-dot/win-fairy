@@ -58,11 +58,14 @@ export function computeSeriesAndStreak(games: KboGame[]): KboGame[] {
   });
 }
 
-/** 단일 미래 경기(KBO 정보 포함)에 대해 B그룹 피처 하나가 참인지 판정. 미래 스트릭은 알 수 없으므로 보수적으로 false. */
+/** 단일 경기(KBO 정보 포함)에 대해 B그룹 피처 하나가 참인지 판정. 완료된 경기는 실제 계산된
+ * 스트릭 값을 쓰고, 아직 결과가 없는 미래 경기는 필드 자체가 없어(undefined) 자동으로 false 처리된다
+ * (미래 스트릭은 알 수 없으므로 보수적으로 false여야 함 — computeSeriesAndStreak 참고). */
 export function kboFeatureTrueForSingleDate(fname: string, game: KboGame): boolean | null {
   if (fname.startsWith("홈원정=")) return game.홈원정 === fname.split("=")[1];
   if (fname.startsWith("상대팀=")) return game.상대팀 === fname.split("=")[1];
   if (fname.startsWith("시리즈차수=")) return String(game.시리즈차수 ?? "") === fname.split("=")[1];
-  if (fname === "직전연승중" || fname === "직전연패중") return false;
+  if (fname === "직전연승중") return Boolean(game.직전연승중);
+  if (fname === "직전연패중") return Boolean(game.직전연패중);
   return null; // KBO 피처가 아님
 }
