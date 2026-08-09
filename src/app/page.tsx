@@ -1,5 +1,6 @@
 "use client";
 
+import { track } from "@vercel/analytics";
 import { toBlob, toPng } from "html-to-image";
 import { useEffect, useMemo, useRef, useState } from "react";
 import CalendarHint from "@/components/CalendarHint";
@@ -14,6 +15,16 @@ import { getTeamMeta } from "@/lib/data/teams";
 import { useVisitState } from "@/lib/useVisitState";
 
 const HEADER_GRADIENT = "radial-gradient(130% 100% at 50% 0%, #46545F 0%, #313D48 45%, #1E2830 100%)";
+const ATTEMPT_COUNT_KEY = "seungyo-pandokgi:attempt-count:v1";
+
+/** 이 브라우저에서 지금까지 판독을 시도한 누적 횟수. Vercel Analytics 이벤트 속성으로 붙여서
+ * "여러 번 판독한 사람이 몇 명인지"를 대시보드에서 가늠할 수 있게 한다. */
+function bumpAttemptCount(): number {
+  if (typeof window === "undefined") return 1;
+  const next = Number(window.localStorage.getItem(ATTEMPT_COUNT_KEY) ?? "0") + 1;
+  window.localStorage.setItem(ATTEMPT_COUNT_KEY, String(next));
+  return next;
+}
 
 function DownloadIcon() {
   return (
@@ -106,10 +117,17 @@ export default function Home() {
     } else {
       window.history.replaceState({ page: "detail" }, "");
     }
+    track("판독_시도", { team: teamId ?? "", games: dates.length, attemptNo: bumpAttemptCount() });
     setScreen("loading");
     if (loadingTimerRef.current) clearTimeout(loadingTimerRef.current);
     loadingTimerRef.current = setTimeout(() => {
-      setScreen(analysis.failed || !analysis.result ? "error" : "result");
+      if (analysis.failed || !analysis.result) {
+        track("판독_실패");
+        setScreen("error");
+      } else {
+        track("판독_완료", { status: analysis.result.status });
+        setScreen("result");
+      }
     }, LOADING_DURATION_MS);
   }
 
@@ -128,6 +146,7 @@ export default function Home() {
       link.download = `승요판독기_${team.id}.png`;
       link.href = dataUrl;
       link.click();
+      track("이미지_저장", { team: team.id });
     } catch (err) {
       console.error(err);
       showToast(IMAGE_ERROR_MESSAGE);
@@ -156,6 +175,7 @@ export default function Home() {
         link.click();
         URL.revokeObjectURL(url);
       }
+      track("공유하기", { team: team.id });
     } catch (err) {
       // 사용자가 공유 시트를 취소한 경우는 에러로 취급하지 않는다
       if (!(err instanceof DOMException && err.name === "AbortError")) {
