@@ -1,0 +1,36 @@
+name: Refresh KBO schedule
+
+on:
+  schedule:
+    # 매일 15:30 UTC = 00:30 KST(다음날). 그날 경기가 대부분 종료된 직후 최신 결과를 반영한다.
+    - cron: "30 15 * * *"
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - run: npm ci
+
+      - run: npm run fetch:kbo
+
+      - name: Commit and push if changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/kbo-cache src/data/kbo-schedule.json
+          if git diff --cached --quiet; then
+            echo "변경 없음, 커밋 생략"
+          else
+            git commit -m "chore: KBO 일정/결과 갱신 $(date -u +%Y-%m-%d)"
+            git push
+          fi

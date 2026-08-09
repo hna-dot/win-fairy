@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>승요 판독기 - 결과카드 세트</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Noto+Serif+KR:wght@500;700;900&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#0B1220;
+    --paper:#F6F1E4;
+    --team-blue:#0D3E8F;
+    --team-blue-deep:#082A63;
+    --gold:#C9A227;
+    --red:#B3261E;
+    --amber:#B5691A;
+    --stockblue:#1A56C4;
+    --grey:#5B6472;
+    --line:#D8CDB0;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;background:#151515;font-family:'IBM Plex Mono', monospace;}
+  .stage{ max-width:430px; margin:0 auto; padding:28px 16px 60px; }
+  .section-label{
+    color:#8a8266; font-family:'Chakra Petch', sans-serif;
+    font-size:12px; letter-spacing:0.14em; margin:0 4px 10px;
+  }
+
+  .card{
+    width:100%;
+    aspect-ratio:9/16;
+    background:radial-gradient(ellipse at top, var(--team-blue) 0%, var(--team-blue-deep) 55%, var(--ink) 100%);
+    border-radius:18px;
+    position:relative; overflow:hidden;
+    display:flex; flex-direction:column;
+    box-shadow:0 30px 60px rgba(0,0,0,0.5);
+    color:var(--paper);
+    margin-bottom:40px;
+  }
+
+  .header{ padding:24px 24px 10px; text-align:center; }
+  .eyebrow{
+    font-family:'Chakra Petch', sans-serif; font-size:10.5px; letter-spacing:0.26em;
+    color:rgba(246,241,228,0.65); font-weight:600;
+  }
+  .team{
+    margin-top:6px; font-family:'Chakra Petch', sans-serif; font-size:12.5px;
+    letter-spacing:0.17em; color:var(--gold); font-weight:600;
+  }
+
+  .receipt{
+    margin:8px 18px 16px; background:var(--paper); border-radius:4px;
+    flex:1; position:relative; color:var(--ink);
+    padding:20px 20px 16px; display:flex; flex-direction:column;
+    box-shadow:0 12px 24px rgba(0,0,0,0.35);
+  }
+  .receipt::before, .receipt::after{
+    content:""; position:absolute; left:0; right:0; height:10px;
+    background:radial-gradient(circle at 8px 0, transparent 8px, var(--paper) 8.5px) repeat-x;
+    background-size:16px 16px;
+  }
+  .receipt::before{ top:-9px; transform:rotate(180deg); }
+  .receipt::after{ bottom:-9px; }
+
+  .verdict-label{
+    font-family:'Chakra Petch', sans-serif; font-size:9.5px; letter-spacing:0.19em;
+    color:#8a8266; font-weight:600; border-bottom:1px dashed var(--line); padding-bottom:9px;
+  }
+  .verdict{
+    font-family:'Noto Serif KR', serif; font-weight:900; font-size:20px; line-height:1.42;
+    margin:14px 0 4px; letter-spacing:-0.01em;
+  }
+  .verdict .highlight{ background:linear-gradient(180deg, transparent 60%, rgba(201,162,39,0.45) 60%); }
+  .verdict .tail{ font-size:15px; font-weight:700; display:block; margin-top:4px; }
+  .tail.gold{ color:var(--gold); }
+  .tail.red{ color:var(--red); }
+  .tail.amber{ color:var(--amber); }
+  .tail.stockblue{ color:var(--stockblue); }
+
+  .stat-row{
+    display:flex; align-items:baseline; gap:10px; margin:12px 0 8px;
+    padding-top:12px; border-top:1px dashed var(--line);
+  }
+  .stat-big{ font-family:'Chakra Petch', sans-serif; font-size:28px; font-weight:700; }
+  .stat-sub{ font-size:11px; color:#5c563f; }
+
+  .rarity-row{ display:flex; align-items:center; gap:8px; margin:2px 0 4px; font-size:10.5px; color:#5c563f; }
+  .rarity-row .label{ color:#8a8266; }
+  .stars{ letter-spacing:2px; font-size:12.5px; }
+  .stars.red{ color:var(--red); }
+  .stars.amber{ color:var(--amber); }
+  .stars.stockblue{ color:var(--stockblue); }
+
+  .evidence{
+    margin-top:12px; padding-top:11px; border-top:1px dashed var(--line);
+    font-size:10px; line-height:1.85; color:#4a4636;
+  }
+  .evidence .row{ display:flex; justify-content:space-between; gap:8px; }
+  .evidence .row span:first-child{ color:#8a8266; white-space:nowrap; }
+  .evidence .row span:last-child{ text-align:right; }
+
+  .next-box{
+    margin-top:12px; border:1px dashed var(--red); border-radius:6px;
+    padding:9px 11px; display:flex; align-items:center; justify-content:space-between; gap:8px;
+  }
+  .next-box.amber{ border-color:var(--amber); }
+  .next-box.stockblue{ border-color:var(--stockblue); }
+  .next-box .nb-label{
+    font-family:'Chakra Petch', sans-serif; font-size:8.5px; letter-spacing:0.08em; font-weight:700;
+  }
+  .next-box.red .nb-label, .next-box .nb-arrow.red{ color:var(--red); }
+  .next-box.amber .nb-label, .next-box .nb-arrow.amber{ color:var(--amber); }
+  .next-box.stockblue .nb-label, .next-box .nb-arrow.stockblue{ color:var(--stockblue); }
+  .next-box .nb-date{ font-family:'Chakra Petch', sans-serif; font-size:13px; font-weight:700; color:var(--ink); margin-top:2px; }
+  .next-box .nb-desc{ font-size:9.5px; color:#5c563f; margin-top:1px; }
+  .next-box .nb-arrow{ font-size:16px; }
+
+  .footer-row{
+    margin-top:auto; padding-top:11px; border-top:1px dashed var(--line);
+    display:flex; align-items:center; gap:10px;
+  }
+  .footer-note{ font-size:9px; color:#9c9678; line-height:1.6; flex:1; }
+
+  .stamp{
+    flex:0 0 auto; width:60px; height:60px; border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    transform:rotate(-12deg); font-family:'Chakra Petch', sans-serif;
+    text-align:center; opacity:0.9; mix-blend-mode:multiply; position:relative;
+  }
+  .stamp::before{ content:""; position:absolute; inset:4px; border-radius:50%; }
+  .stamp-text{ font-size:8.5px; font-weight:700; line-height:1.25; }
+  .stamp.gold{ border:2px solid var(--gold); color:var(--gold); }
+  .stamp.gold::before{ border:1px solid var(--gold); }
+  .stamp.red{ border:2px solid var(--red); color:var(--red); }
+  .stamp.red::before{ border:1px solid var(--red); }
+  .stamp.amber{ border:2px solid var(--amber); color:var(--amber); }
+  .stamp.amber::before{ border:1px solid var(--amber); }
+  .stamp.stockblue{ border:2px solid var(--stockblue); color:var(--stockblue); }
+  .stamp.stockblue::before{ border:1px solid var(--stockblue); }
+  .stamp.grey{ border:2px solid var(--grey); color:var(--grey); transform:rotate(0deg); }
+  .stamp.grey::before{ border:1px solid var(--grey); }
+
+  .bottom-bar{ padding:14px 24px 20px; display:flex; justify-content:space-between; align-items:center; }
+  .brand{ font-family:'Chakra Petch', sans-serif; font-size:11.5px; font-weight:700; letter-spacing:0.06em; color:rgba(246,241,228,0.9); }
+  .brand .dot{ color:var(--gold); }
+  .handle{ font-family:'IBM Plex Mono', monospace; font-size:9.5px; color:rgba(246,241,228,0.55); }
+
+  /* ---- 판독보류 전용 (심플 레이아웃) ---- */
+  .hold-body{
+    flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center;
+    text-align:center; padding:0 8px;
+  }
+  .hold-title{
+    font-family:'Noto Serif KR', serif; font-weight:900; font-size:26px; color:var(--grey);
+    margin-bottom:10px;
+  }
+  .hold-desc{ font-size:11px; color:#5c563f; line-height:1.7; }
+  .hold-desc b{ color:var(--ink); }
+  .progress-track{
+    width:100%; height:8px; background:var(--line); border-radius:4px; margin:16px 0 8px; overflow:hidden;
+  }
+  .progress-fill{ height:100%; background:var(--grey); width:66%; }
+  .progress-label{ font-size:9.5px; color:#8a8266; }
+  .valve-line{
+    margin-top:18px; font-family:'Noto Serif KR', serif; font-weight:700; font-size:13px; color:var(--ink);
+  }
+</style>
+</head>
+<body>
+<div class="stage">
+
+  <!-- ① 완전승요 -->
+  <div class="section-label">① 완전승요 카드</div>
+  <div class="card">
+    <div class="header">
+      <div class="eyebrow">직 관 승 요 판 독 결 과</div>
+      <div class="team">SAMSUNG LIONS · 대구</div>
+    </div>
+    <div class="receipt">
+      <div class="verdict-label">FORCED VERDICT — 알고리즘 판독 결과</div>
+      <div class="verdict">
+        직관간 <span class="highlight">5경기 전부 승리.</span>
+        <span class="tail gold">→ 조건 없음. 당신 자체가 승요.</span>
+      </div>
+      <div class="stat-row">
+        <div class="stat-big">5전 5승</div>
+        <div class="stat-sub">승률 100%</div>
+      </div>
+      <div class="rarity-row">
+        <span class="label">비고</span>
+        <span>별도 조건을 산출할 필요가 없는 최상위 등급입니다.</span>
+      </div>
+      <div class="evidence">
+        <div class="row"><span>06/13 vs SSG</span><span>홈 · 승</span></div>
+        <div class="row"><span>06/16 vs 키움</span><span>홈 · 승</span></div>
+        <div class="row"><span>06/26 vs KT</span><span>홈 · 승</span></div>
+        <div class="row"><span>06/30 vs NC</span><span>원정 · 승</span></div>
+        <div class="row"><span>07/04 vs SSG</span><span>원정 · 승</span></div>
+      </div>
+      <div class="next-box" style="border-color:var(--gold)">
+        <div>
+          <div class="nb-label" style="color:var(--gold)">다음 경기 전망</div>
+          <div class="nb-date">당장 다음 경기</div>
+          <div class="nb-desc">당신의 팀은 당신의 힘이 필요합니다.</div>
+        </div>
+        <div class="nb-arrow" style="color:var(--gold)">→</div>
+      </div>
+      <div class="footer-row">
+        <div class="footer-note">
+          본 결과는 표본 3경기를 100% 만족하는 조건이며,<br>
+          그 외의 통계적 유의미성은 판독기의 알 바 아님.
+        </div>
+        <div class="stamp gold"><div class="stamp-text">완전<br>승요<br>인증</div></div>
+      </div>
+    </div>
+    <div class="bottom-bar">
+      <div class="brand">승요 판독기<span class="dot">.</span></div>
+      <div class="handle">#완전승요 #직관필승</div>
+    </div>
+  </div>
+
+  <!-- ② 부분승요 -->
+  <div class="section-label">② 부분승요 카드</div>
+  <div class="card">
+    <div class="header">
+      <div class="eyebrow">직 관 승 요 판 독 결 과</div>
+      <div class="team">SAMSUNG LIONS · 대구</div>
+    </div>
+    <div class="receipt">
+      <div class="verdict-label">FORCED VERDICT — 알고리즘 판독 결과</div>
+      <div class="verdict">
+        <span class="highlight">원정 경기이면서</span><br>
+        <span class="highlight">상대가 KT면</span>
+        <span class="tail red">→ 무조건 승요.</span>
+      </div>
+      <div class="stat-row">
+        <div class="stat-big">3전 3승</div>
+        <div class="stat-sub">승률 100%</div>
+      </div>
+      <div class="rarity-row">
+        <span class="label">희귀도</span>
+        <span class="stars red">★★★★☆</span>
+        <span>(시즌 144경기 중 6경기, 4.2%)</span>
+      </div>
+      <div class="evidence">
+        <div class="row"><span>05/12 원정</span><span>KT전 · 수원 · 1차전</span></div>
+        <div class="row"><span>05/13 원정</span><span>KT전 · 수원 · 2차전</span></div>
+        <div class="row"><span>08/21 원정</span><span>KT전 · 수원 · 3차전</span></div>
+      </div>
+      <div class="next-box red">
+        <div>
+          <div class="nb-label">다음 승요 확정처</div>
+          <div class="nb-date">9/4 (금) 원정 KT전</div>
+          <div class="nb-desc">수원 KT위즈파크 · 조건 100% 충족</div>
+        </div>
+        <div class="nb-arrow red">→</div>
+      </div>
+      <div class="footer-row">
+        <div class="footer-note">
+          본 결과는 표본 3경기를 100% 만족하는 조건이며,<br>
+          그 외의 통계적 유의미성은 판독기의 알 바 아님.
+        </div>
+        <div class="stamp red"><div class="stamp-text">승요<br>공식<br>인증</div></div>
+      </div>
+    </div>
+    <div class="bottom-bar">
+      <div class="brand">승요 판독기<span class="dot">.</span></div>
+      <div class="handle">#승요맞음 #직관필승</div>
+    </div>
+  </div>
+
+  <!-- ③ 패배방지모드 -->
+  <div class="section-label">③ 패배방지 모드 카드</div>
+  <div class="card">
+    <div class="header">
+      <div class="eyebrow">직 관 패 배 원 인 판 독 결 과</div>
+      <div class="team">SAMSUNG LIONS · 대구</div>
+    </div>
+    <div class="receipt">
+      <div class="verdict-label">AVOIDANCE VERDICT — 알고리즘 판독 결과</div>
+      <div class="verdict">
+        <span class="highlight">원정 경기이면서</span><br>
+        <span class="highlight">상대가 SSG면</span>
+        <span class="tail stockblue">→ 반드시 집니다. 피하십시오.</span>
+      </div>
+      <div class="stat-row">
+        <div class="stat-big">3전 3패</div>
+        <div class="stat-sub">패배율 100%</div>
+      </div>
+      <div class="rarity-row">
+        <span class="label">회피지수</span>
+        <span class="stars stockblue">★★★☆☆</span>
+        <span>(시즌 144경기 중 9경기, 6.3%)</span>
+      </div>
+      <div class="evidence">
+        <div class="row"><span>05/19 원정</span><span>SSG전 · 인천 · 1차전</span></div>
+        <div class="row"><span>05/20 원정</span><span>SSG전 · 인천 · 2차전</span></div>
+        <div class="row"><span>07/03 원정</span><span>SSG전 · 인천 · 3차전</span></div>
+      </div>
+      <div class="next-box stockblue">
+        <div>
+          <div class="nb-label">다음 회피 대상 경기</div>
+          <div class="nb-date">9/11 (금) 원정 SSG전</div>
+          <div class="nb-desc">인천 SSG랜더스필드 · 직관 자제 권고</div>
+        </div>
+        <div class="nb-arrow stockblue">→</div>
+      </div>
+      <div class="footer-row">
+        <div class="footer-note">
+          본 결과는 표본 3경기를 100% 만족하는 조건이며,<br>
+          그 외의 통계적 유의미성은 판독기의 알 바 아님.
+        </div>
+        <div class="stamp stockblue"><div class="stamp-text">회피<br>경보<br>발령</div></div>
+      </div>
+    </div>
+    <div class="bottom-bar">
+      <div class="brand">승요 판독기<span class="dot">.</span></div>
+      <div class="handle">#회피경보 #패요탈출</div>
+    </div>
+  </div>
+
+  <!-- ④ 판독보류 (표본부족) -->
+  <div class="section-label">④ 판독보류 카드 (표본 3경기 미만)</div>
+  <div class="card">
+    <div class="header">
+      <div class="eyebrow">직 관 기 록 심 사 결 과</div>
+      <div class="team">SAMSUNG LIONS · 대구</div>
+    </div>
+    <div class="receipt">
+      <div class="verdict-label">STATUS — 판독 보류</div>
+      <div class="hold-body">
+        <div class="hold-title">판독 보류</div>
+        <div class="hold-desc">
+          표본 부족으로 승요 여부를 판독할 수 없습니다.<br>
+          현재 직관 기록 <b>2경기</b> (최소 3경기 필요)
+        </div>
+        <div class="progress-track"><div class="progress-fill"></div></div>
+        <div class="progress-label">2 / 3경기</div>
+        <div class="valve-line">승요가 되기 위해서는 수련이 필요합니다.</div>
+      </div>
+      <div class="footer-row">
+        <div class="footer-note">
+          판독은 최소 3경기의 직관 기록이 누적된 후<br>
+          자동으로 재개됩니다.
+        </div>
+        <div class="stamp grey"><div class="stamp-text">판독<br>보류</div></div>
+      </div>
+    </div>
+    <div class="bottom-bar">
+      <div class="brand">승요 판독기<span class="dot">.</span></div>
+      <div class="handle">#예비승요 #수련중</div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>승요 판독기 - 플로우 프로토타입</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Noto+Serif+KR:wght@500;700;900&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#0B1220;
+    --paper:#F6F1E4;
+    --line:#D8CDB0;
+    --gold:#C9A227;
+    /* 키움 히어로즈 팀컬러 */
+    --team-main:#8E1834;
+    --team-deep:#4A0D1C;
+    --team-accent:#1A1A1A;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;background:#151515;font-family:'IBM Plex Mono', monospace;}
+  .stage{
+    max-width:430px;
+    margin:0 auto;
+    padding:28px 16px 60px;
+  }
+  .section-label{
+    color:#8a8266;
+    font-family:'Chakra Petch', sans-serif;
+    font-size:12px;
+    letter-spacing:0.14em;
+    margin:0 4px 10px;
+  }
+  .phone{
+    background:#000;
+    border-radius:34px;
+    padding:10px;
+    margin-bottom:44px;
+    box-shadow:0 30px 60px rgba(0,0,0,0.55);
+  }
+  .screen{
+    background:var(--paper);
+    border-radius:26px;
+    overflow:hidden;
+    aspect-ratio:9/17.5;
+    position:relative;
+    display:flex;
+    flex-direction:column;
+  }
+
+  /* ---------- 화면1: 팀+날짜 선택 ---------- */
+  .s1-header{
+    padding:22px 20px 14px;
+    background:var(--ink);
+    color:var(--paper);
+  }
+  .s1-title{
+    font-family:'Noto Serif KR', serif;
+    font-weight:900;
+    font-size:19px;
+    letter-spacing:-0.01em;
+  }
+  .s1-sub{
+    margin-top:4px;
+    font-size:11px;
+    color:rgba(246,241,228,0.6);
+  }
+
+  .team-scroll{
+    display:flex;
+    gap:10px;
+    padding:16px 20px;
+    overflow-x:auto;
+  }
+  .team-chip{
+    flex:0 0 auto;
+    width:56px;
+    text-align:center;
+  }
+  .team-badge{
+    width:48px;height:48px;
+    border-radius:50%;
+    display:flex;align-items:center;justify-content:center;
+    font-family:'Chakra Petch', sans-serif;
+    font-weight:700;
+    font-size:13px;
+    color:#fff;
+    border:2px solid transparent;
+  }
+  .team-badge.selected{
+    border-color:var(--gold);
+    box-shadow:0 0 0 3px rgba(201,162,39,0.25);
+  }
+  .team-name{
+    margin-top:6px;
+    font-size:9.5px;
+    color:#5c563f;
+  }
+  .team-name.selected{ color:var(--ink); font-weight:700; }
+
+  .cal-block{
+    margin:6px 20px 0;
+    background:#fff;
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:14px 14px 8px;
+  }
+  .cal-title{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    font-family:'Chakra Petch', sans-serif;
+    font-size:12px;
+    font-weight:700;
+    color:var(--ink);
+    margin-bottom:10px;
+  }
+  .cal-title span:last-child{ color:#8a8266; font-weight:500; font-size:10.5px; }
+  .cal-grid{
+    display:grid;
+    grid-template-columns:repeat(7,1fr);
+    gap:5px;
+    font-size:10.5px;
+  }
+  .cal-dow{ text-align:center; color:#a49c7c; font-size:9.5px; padding-bottom:4px; }
+  .cal-day{
+    aspect-ratio:1;
+    display:flex;align-items:center;justify-content:center;
+    border-radius:50%;
+    color:#333;
+  }
+  .cal-day.blank{ visibility:hidden; }
+  .cal-day.picked{
+    background:var(--team-main);
+    color:#fff;
+    font-weight:700;
+  }
+
+  .visit-summary{
+    margin:14px 20px 0;
+    font-size:11px;
+    color:var(--ink);
+    display:flex;
+    align-items:center;
+    gap:6px;
+  }
+  .visit-summary .n{
+    font-family:'Chakra Petch', sans-serif;
+    font-weight:700;
+    color:var(--team-main);
+    font-size:13px;
+  }
+
+  .cta{
+    margin-top:auto;
+    padding:16px 20px 22px;
+  }
+  .cta-btn{
+    width:100%;
+    padding:15px;
+    background:var(--ink);
+    color:var(--paper);
+    text-align:center;
+    border-radius:12px;
+    font-family:'Chakra Petch', sans-serif;
+    font-weight:700;
+    font-size:14px;
+    letter-spacing:0.04em;
+  }
+  .cta-btn .gold{ color:var(--gold); }
+
+  /* ---------- 화면2: 결과 카드 ---------- */
+  .s2-header{
+    padding:22px 22px 12px;
+    text-align:center;
+    background:
+      radial-gradient(ellipse at top, var(--team-main) 0%, var(--team-deep) 55%, var(--ink) 100%);
+    color:var(--paper);
+  }
+  .s2-eyebrow{
+    font-family:'Chakra Petch', sans-serif;
+    font-size:10.5px;
+    letter-spacing:0.26em;
+    color:rgba(246,241,228,0.65);
+    font-weight:600;
+  }
+  .s2-team{
+    margin-top:5px;
+    font-family:'Chakra Petch', sans-serif;
+    font-size:12px;
+    letter-spacing:0.16em;
+    color:var(--gold);
+    font-weight:600;
+  }
+
+  .receipt{
+    margin:-4px 18px 16px;
+    background:var(--paper);
+    border-radius:4px;
+    flex:1;
+    position:relative;
+    color:var(--ink);
+    padding:20px 18px 16px;
+    display:flex;
+    flex-direction:column;
+    box-shadow:0 12px 24px rgba(0,0,0,0.3);
+  }
+  .receipt::before, .receipt::after{
+    content:"";
+    position:absolute;
+    left:0; right:0; height:9px;
+    background:radial-gradient(circle at 7px 0, transparent 7px, var(--paper) 7.5px) repeat-x;
+    background-size:14px 14px;
+  }
+  .receipt::before{ top:-8px; transform:rotate(180deg); }
+  .receipt::after{ bottom:-8px; }
+
+  .stamp{
+    position:absolute;
+    right:12px;
+    top:-30px;
+    width:74px;height:74px;
+    border:2px solid #B3261E;
+    border-radius:50%;
+    color:#B3261E;
+    display:flex;align-items:center;justify-content:center;
+    transform:rotate(-12deg);
+    font-family:'Chakra Petch', sans-serif;
+    text-align:center;
+    opacity:0.9;
+    mix-blend-mode:multiply;
+    background:var(--paper);
+  }
+  .stamp::before{
+    content:"";
+    position:absolute; inset:5px;
+    border:1px solid #B3261E;
+    border-radius:50%;
+  }
+  .stamp-text{ font-size:9.5px; font-weight:700; line-height:1.25; }
+
+  .verdict-label{
+    font-family:'Chakra Petch', sans-serif;
+    font-size:9.5px;
+    letter-spacing:0.18em;
+    color:#8a8266;
+    font-weight:600;
+    border-bottom:1px dashed var(--line);
+    padding-bottom:9px;
+  }
+  .verdict{
+    font-family:'Noto Serif KR', serif;
+    font-weight:900;
+    font-size:18px;
+    line-height:1.42;
+    margin:13px 0 4px;
+    letter-spacing:-0.01em;
+  }
+  .verdict .hl{ background:linear-gradient(180deg, transparent 60%, rgba(201,162,39,0.45) 60%); }
+  .verdict .tail{ font-size:14px; font-weight:700; color:#B3261E; display:block; margin-top:4px; }
+
+  .stat-row{
+    display:flex; align-items:baseline; gap:8px;
+    margin:11px 0 2px; padding-top:11px;
+    border-top:1px dashed var(--line);
+  }
+  .stat-big{ font-family:'Chakra Petch', sans-serif; font-size:27px; font-weight:700; }
+  .stat-sub{ font-size:10.5px; color:#5c563f; }
+
+  .rarity{
+    margin-top:8px;
+    font-size:10.5px;
+    color:var(--team-main);
+    font-weight:600;
+    background:rgba(142,24,52,0.08);
+    border-radius:6px;
+    padding:7px 9px;
+    line-height:1.5;
+  }
+
+  .evidence{
+    margin-top:12px; padding-top:10px;
+    border-top:1px dashed var(--line);
+    font-size:9.5px; line-height:1.8; color:#4a4636;
+  }
+  .evidence .row{ display:flex; justify-content:space-between; gap:6px; }
+  .evidence .row span:first-child{ color:#8a8266; white-space:nowrap; }
+  .evidence .row span:last-child{ text-align:right; }
+
+  .footer-note{
+    margin-top:auto; padding-top:10px;
+    font-size:8.5px; color:#9c9678; line-height:1.6;
+    border-top:1px dashed var(--line);
+  }
+
+  .s2-bottom{
+    padding:12px 22px 20px;
+    display:flex; justify-content:space-between; align-items:center;
+  }
+  .brand{ font-family:'Chakra Petch', sans-serif; font-size:11px; font-weight:700; color:rgba(246,241,228,0.9); }
+  .brand .dot{ color:var(--gold); }
+  .handle{ font-family:'IBM Plex Mono', monospace; font-size:9px; color:rgba(246,241,228,0.55); }
+</style>
+</head>
+<body>
+<div class="stage">
+
+  <div class="section-label">① 팀 &amp; 직관날짜 선택 화면</div>
+  <div class="phone">
+    <div class="screen">
+      <div class="s1-header">
+        <div class="s1-title">내 승요 학</div>
+        <div class="s1-sub">응원팀과 직관간 날짜를 고르면, 억지로라도 승요를 찾아드립니다.</div>
+      </div>
+
+      <div class="team-scroll">
+        <div class="team-chip"><div class="team-badge" style="background:#003278">SS</div><div class="team-name">삼성</div></div>
+        <div class="team-chip"><div class="team-badge" style="background:#C30452">LG</div><div class="team-name">LG</div></div>
+        <div class="team-chip"><div class="team-badge selected" style="background:#8E1834">WO</div><div class="team-name selected">키움</div></div>
+        <div class="team-chip"><div class="team-badge" style="background:#000000">DS</div><div class="team-name">두산</div></div>
+        <div class="team-chip"><div class="team-badge" style="background:#C00000">LT</div><div class="team-name">롯데</div></div>
+        <div class="team-chip"><div class="team-badge" style="background:#0F1E44">SK</div><div class="team-name">SSG</div></div>
+        <div class="team-chip"><div class="team-badge" style="background:#FF6600">HH</div><div class="team-name">한화</div></div>
+        <div class="team-chip"><div class="team-badge" style="background:#1D2E5C">NC</div><div class="team-name">NC</div></div>
+      </div>
+
+      <div class="cal-block">
+        <div class="cal-title"><span>2026년 6월</span><span>직관간 날짜 탭하기</span></div>
+        <div class="cal-grid">
+          <div class="cal-dow">일</div><div class="cal-dow">월</div><div class="cal-dow">화</div><div class="cal-dow">수</div><div class="cal-dow">목</div><div class="cal-dow">금</div><div class="cal-dow">토</div>
+          <div class="cal-day blank"></div><div class="cal-day blank"></div>
+          <div class="cal-day">1</div><div class="cal-day">2</div><div class="cal-day">3</div><div class="cal-day">4</div><div class="cal-day">5</div>
+          <div class="cal-day">6</div><div class="cal-day">7</div><div class="cal-day">8</div><div class="cal-day">9</div><div class="cal-day">10</div><div class="cal-day">11</div><div class="cal-day">12</div>
+          <div class="cal-day">13</div><div class="cal-day picked">14</div><div class="cal-day">15</div><div class="cal-day">16</div><div class="cal-day picked">17</div><div class="cal-day">18</div><div class="cal-day">19</div>
+          <div class="cal-day">20</div><div class="cal-day">21</div><div class="cal-day picked">22</div><div class="cal-day">23</div><div class="cal-day">24</div><div class="cal-day">25</div><div class="cal-day">26</div>
+          <div class="cal-day">27</div><div class="cal-day">28</div><div class="cal-day picked">29</div><div class="cal-day">30</div>
+        </div>
+      </div>
+
+      <div class="visit-summary">이번 시즌 직관 <span class="n">8경기</span> 선택됨</div>
+
+      <div class="cta">
+        <div class="cta-btn">억지로 <span class="gold">승요</span> 찾기 →</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-label">② 결과 카드 화면 — 키움 히어로즈 예시</div>
+  <div class="phone">
+    <div class="screen">
+      <div class="s2-header">
+        <div class="s2-eyebrow">직 관 승 요 판 독 결 과</div>
+        <div class="s2-team">KIWOOM HEROES · 고척</div>
+      </div>
+
+      <div class="receipt">
+        <div class="stamp"><div class="stamp-text">승요<br>공식<br>인증</div></div>
+
+        <div class="verdict-label">FORCED VERDICT — 알고리즘 판독 결과</div>
+
+        <div class="verdict">
+          <span class="hl">화요일에 직관가면서</span><br>
+          <span class="hl">월+일 자릿수합에 4가 들어가면</span>
+          <span class="tail">→ 무조건 승요.</span>
+        </div>
+
+        <div class="stat-row">
+          <div class="stat-big">3전 3승</div>
+          <div class="stat-sub">승률 100%</div>
+        </div>
+
+        <div class="rarity">
+          이 조건, 시즌 전체 144경기 중 단 <b>3경기</b>에서만 성립 (2.1%)
+        </div>
+
+        <div class="evidence">
+          <div class="row"><span>05/26 (화)</span><span>5+26=31 → 자릿수합 4</span></div>
+          <div class="row"><span>06/16 (화)</span><span>6+16=22 → 자릿수합 4</span></div>
+          <div class="row"><span>09/22 (화)</span><span>9+22=31 → 자릿수합 4</span></div>
+        </div>
+
+        <div class="footer-note">
+          본 결과는 표본 3경기를 100% 만족하는 조건이며,<br>
+          그 외의 통계적 유의미성은 판독기의 알 바 아님.
+        </div>
+      </div>
+
+      <div class="s2-bottom">
+        <div class="brand">내 승요 학<span class="dot">.</span></div>
+        <div class="handle">#억지승요 #직관필승</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

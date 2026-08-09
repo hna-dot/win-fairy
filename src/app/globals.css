@@ -1,0 +1,96 @@
+@import "tailwindcss";
+
+:root {
+  --ink: #0b1220;
+  --paper: #f6f1e4;
+  --line: #d8cdb0;
+  --gold: #c9a227;
+  --red: #b3261e;
+  --amber: #b5691a;
+  --stockblue: #1a56c4;
+  --grey: #5b6472;
+  /* 선택 화면 상단 헤더 그라디언트(page.tsx의 HEADER_GRADIENT)와 같은 톤으로 통일 */
+  --page-bg: #1e2830;
+}
+
+@theme inline {
+  --color-ink: var(--ink);
+  --color-paper: var(--paper);
+  --color-line: var(--line);
+  --color-gold: var(--gold);
+  --color-red: var(--red);
+  --color-amber: var(--amber);
+  --color-stockblue: var(--stockblue);
+  --color-grey: var(--grey);
+  --color-page-bg: var(--page-bg);
+  --font-display: var(--font-chakra-petch);
+  --font-serif-kr: var(--font-noto-serif-kr);
+  --font-mono: var(--font-ibm-plex-mono);
+  --font-pretendard-black: var(--font-pretendard-black);
+}
+
+html,
+body {
+  background: var(--page-bg);
+  color: var(--ink);
+}
+
+body {
+  font-family: var(--font-mono), monospace;
+}
+
+.verdict-highlight {
+  background: linear-gradient(180deg, transparent 60%, rgba(201, 162, 39, 0.5) 60%);
+}
+
+.no-scrollbar {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE/Edge */
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none; /* Chrome/Safari */
+}
+
+@keyframes sy-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes sy-pulse {
+  0%,
+  100% {
+    opacity: 0.25;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+@keyframes sy-scan {
+  0% {
+    transform: translateY(-14px);
+  }
+  100% {
+    transform: translateY(74px);
+  }
+}
+@keyframes sy-bar {
+  0% {
+    width: 8%;
+  }
+  55% {
+    width: 62%;
+  }
+  100% {
+    width: 88%;
+  }
+}
+@keyframes sy-caret {
+  0%,
+  49% {
+    opacity: 1;
+  }
+  50%,
+  100% {
+    opacity: 0;
+  }
+}
