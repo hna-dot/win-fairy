@@ -27,21 +27,6 @@ const ACCENT_HEX: Record<Accent, string> = {
 
 const EYEBROW = "승 요 판 독 결 과";
 
-/**
- * 도장 예외 레이아웃 트리거: 조건에 "숫자놀이" 계열 피처(자릿수합, 월일덧셈/월일곱셈/월일자체
- * 숫자포함)가 하나라도 섞여 있고 depth(조건 개수)가 2 이상이면 문구가 길어지기 쉬워서
- * 도장을 하단으로 옮긴다. 카테고리 자체(자릿수합=N 같은 정확값 매칭 포함)로 판단하며,
- * 월일합=N/월일곱=N 같은 정확값 매칭은 대상이 아니다(숫자 "포함 여부" 체크만 해당).
- */
-function isNumerologyStampFeature(fname: string): boolean {
-  return (
-    fname.startsWith("자릿수합") ||
-    fname.startsWith("월일덧셈_숫자") ||
-    fname.startsWith("월일곱셈_숫자") ||
-    fname.startsWith("월일자체_숫자")
-  );
-}
-
 function statusMeta(status: AnalysisOutput["status"]): {
   accent: Accent;
   verdictLabel: string;
@@ -229,8 +214,6 @@ const ResultCard = forwardRef<HTMLDivElement, Props>(function ResultCard({ team,
   const [g1, g2, g3] = deriveHeaderGradient(team.colorMain);
   const issueNumber = buildIssueNumber(team.id, result.coveredDates ?? [], result.status);
   const issueDate = formatIssueDate(today);
-  const condition = result.condition ?? [];
-  const stampException = condition.length >= 2 && condition.some(isNumerologyStampFeature);
 
   return (
     <div
@@ -268,14 +251,7 @@ const ResultCard = forwardRef<HTMLDivElement, Props>(function ResultCard({ team,
           <HoldBody result={result} />
         ) : (
           <>
-            <div className="relative">
-              <VerdictBlock result={result} accent={meta.accent} />
-              {stampException && (
-                <div className="pointer-events-none absolute -bottom-3 right-0 opacity-95">
-                  <StampSeal accent={meta.accent} size={124} />
-                </div>
-              )}
-            </div>
+            <VerdictBlock result={result} accent={meta.accent} />
             <StatRow
               big={
                 result.status === "패배방지"
@@ -301,11 +277,9 @@ const ResultCard = forwardRef<HTMLDivElement, Props>(function ResultCard({ team,
           {breakAfter(footerNote(result), ",")}
         </div>
 
-        {!stampException && (
-          <div className="pointer-events-none absolute top-[44px] right-[10px] opacity-95">
-            <StampSeal accent={meta.accent} size={124} />
-          </div>
-        )}
+        <div className="pointer-events-none absolute top-[44px] right-[10px] opacity-95">
+          <StampSeal accent={meta.accent} size={124} />
+        </div>
       </div>
 
       <div className="flex items-center justify-between px-[26px] pt-3 pb-3.5 text-paper" style={{ background: g3 }}>
