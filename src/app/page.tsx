@@ -165,7 +165,7 @@ export default function Home() {
 
       const nav = navigator as Navigator & { canShare?: (data?: ShareData) => boolean };
       if (nav.share && nav.canShare?.({ files: [file] })) {
-        await nav.share({ files: [file], title: "승요 조건 판독기", text: "내 직관 승요 조건 판독 결과" });
+        await nav.share({ files: [file], title: "승요 판독기", text: "내 직관 승요 판독 결과" });
       } else {
         // 공유 시트를 지원하지 않는 브라우저(주로 데스크톱)는 이미지 저장으로 대체
         const url = URL.createObjectURL(blob);
@@ -255,7 +255,7 @@ export default function Home() {
         <div className="font-display text-[11px] font-bold tracking-[0.22em] text-[#D9B84A]">
           SEUNGYO DETECTOR · KBO 2026
         </div>
-        <div className="mt-[5px] font-display text-[21px] font-bold tracking-[-0.01em]">승요 조건 판독기</div>
+        <div className="mt-[5px] font-display text-[21px] font-bold tracking-[-0.01em]">승요 판독기</div>
         <div className="mt-1.5 max-w-[250px] text-[11px] leading-[1.55] text-paper/[0.78]">
           응원팀과 직관간 날짜를 골라주세요.
           <br />

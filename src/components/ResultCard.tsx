@@ -25,7 +25,7 @@ const ACCENT_HEX: Record<Accent, string> = {
   grey: "var(--grey)",
 };
 
-const EYEBROW = "승 요 조 건 판 독 결 과";
+const EYEBROW = "승 요 판 독 결 과";
 
 /**
  * 도장 예외 레이아웃 트리거: 조건에 "숫자놀이" 계열 피처(자릿수합, 월일덧셈/월일곱셈/월일자체
@@ -301,7 +301,7 @@ const ResultCard = forwardRef<HTMLDivElement, Props>(function ResultCard({ team,
 
       <div className="flex items-center justify-between px-[26px] pt-3 pb-3.5 text-paper" style={{ background: g3 }}>
         <div className="font-display text-[11.5px] font-bold tracking-[0.06em] text-paper/92">
-          승요 조건 판독기<span className="text-gold">.</span>
+          승요 판독기<span className="text-gold">.</span>
         </div>
         <div className="text-[9.5px] text-paper/55">{meta.hashtag}</div>
       </div>
