@@ -34,3 +34,18 @@ jobs:
             git commit -m "chore: KBO 일정/결과 갱신 $(date -u +%Y-%m-%d)"
             git push
           fi
+
+      - name: Notify on failure
+        if: failure()
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: smtp.gmail.com
+          server_port: 465
+          username: ${{ secrets.MAIL_USERNAME }}
+          password: ${{ secrets.MAIL_PASSWORD }}
+          subject: "[승요 판독기] KBO 데이터 갱신 실패"
+          to: zzznd3@gmail.com
+          from: 승요 판독기 봇 <${{ secrets.MAIL_USERNAME }}>
+          body: |
+            KBO 일정 갱신 워크플로가 실패했습니다.
+            로그: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
