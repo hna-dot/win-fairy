@@ -1,7 +1,6 @@
 import { Analytics } from "@vercel/analytics/next";
 import type { Metadata, Viewport } from "next";
 import { Chakra_Petch, IBM_Plex_Mono, Noto_Serif_KR } from "next/font/google";
-import Script from "next/script";
 import "./globals.css";
 
 const chakraPetch = Chakra_Petch({
@@ -53,15 +52,17 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="ko" className={`${chakraPetch.variable} ${notoSerifKr.variable} ${ibmPlexMono.variable}`}>
-      <body className="min-h-screen">
-        {children}
-        <Analytics />
-        <Script
+      <head>
+        {/* eslint-disable-next-line @next/next/no-sync-scripts -- 애드센스 사이트 소유권 확인용, 정적 HTML에 그대로 노출돼야 함 */}
+        <script
           async
           src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4056187987785109"
           crossOrigin="anonymous"
-          strategy="beforeInteractive"
         />
+      </head>
+      <body className="min-h-screen">
+        {children}
+        <Analytics />
       </body>
     </html>
   );
