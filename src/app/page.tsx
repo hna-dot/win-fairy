@@ -322,8 +322,17 @@ export default function Home() {
         </button>
       </div>
 
-      <div className="mx-[22px] mt-6 text-center text-[9px] text-[#a49c7c]">
-        판독은 {SEASON_START.slice(0, 4)} 시즌 한정으로만 가능합니다.
+      <div className="mx-[22px] mt-6 space-y-3 text-[9px] leading-[1.6] text-[#a49c7c]">
+        <p>
+          <span className="font-bold text-[#8a8266]">승요 판독기란?</span> &lsquo;승요&rsquo;는 내가 직관을
+          가면 팀이 반드시 이긴다고 믿는 야구팬들의 오랜 미신입니다. 판독기는 당신이 고른 직관 날짜들의
+          공통점(요일, 상대팀, 날짜 계산 등)을 뒤져 그럴듯한 승리 조건을 찾아냅니다.
+        </p>
+        <p>
+          최소 3경기 이상의 직관 기록이 있어야 판독이 가능하며, 100% 확률로 들어맞는 조건만 채택합니다.
+          그 외의 통계적 유의미성은 판독기의 알 바 아닙니다.
+        </p>
+        <p>판독은 {SEASON_START.slice(0, 4)} 시즌 한정으로만 가능합니다.</p>
       </div>
     </main>
   );
