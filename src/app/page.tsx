@@ -47,6 +47,7 @@ function ShareIcon() {
 
 const IMAGE_ERROR_MESSAGE = "이미지 발급에 실패했습니다. 다시 시도해도 안 되면 다른 브라우저를 이용해주세요.";
 const NO_SHARE_SHEET_MESSAGE = "이 브라우저는 공유 시트를 지원하지 않습니다. 이미지로 저장해 직접 공유해주세요.";
+const SHARE_SUCCESS_MESSAGE = "저장/공유 완료!";
 const LOADING_DURATION_MS = 2200;
 
 function Toast({ message }: { message: string }) {
@@ -142,6 +143,7 @@ export default function Home() {
           title: "승요 판독기",
           text: "내 직관 승요 조건은?\n#승요판독기 #직관기록\nhttps://win-fairy.vercel.app/",
         });
+        showToast(SHARE_SUCCESS_MESSAGE);
       } else {
         // 공유 시트를 지원하지 않는 브라우저(주로 데스크톱)는 이미지 저장으로 대체
         const url = URL.createObjectURL(blob);
