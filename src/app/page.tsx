@@ -281,9 +281,13 @@ export default function Home() {
 
       <div className="mx-[22px] mt-6 text-[9px] leading-[1.6] text-[#a49c7c]">
         <p>
-          <span className="font-bold text-[#8a8266]">승요 판독기란?</span> 승요는 조금이라도 팀에 보탬이
-          되길 바라는 팬들의 간절함입니다. 직관 날짜의 공통점을 뒤져 100% 들어맞는 승리 조건만 채택해
-          판독합니다. 당신의 승요 조건을 찾아 팀의 승리를 도와주세요.
+          <span className="font-bold text-[#8a8266]">승요 판독기란?</span>
+          <br />
+          승요는 조금이라도 팀에 보탬이 되길 바라는 팬들의 간절함입니다.
+          <br />
+          직관 날짜의 공통점을 뒤져 100% 들어맞는 승리 조건만 채택해 판독합니다.
+          <br />
+          당신의 승요 조건을 찾아 팀의 승리를 도와주세요.
         </p>
       </div>
     </main>
