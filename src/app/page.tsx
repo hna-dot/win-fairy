@@ -1,7 +1,7 @@
 "use client";
 
 import { track } from "@vercel/analytics";
-import { toBlob, toPng } from "html-to-image";
+import { toBlob } from "html-to-image";
 import { useEffect, useMemo, useRef, useState } from "react";
 import CalendarHint from "@/components/CalendarHint";
 import ErrorCard from "@/components/ErrorCard";
@@ -57,6 +57,7 @@ function ShareIcon() {
 
 const IMAGE_ERROR_MESSAGE = "이미지 발급에 실패했습니다. 다시 시도해도 안 되면 다른 브라우저를 이용해주세요.";
 const NO_SHARE_SHEET_MESSAGE = "이 브라우저는 공유 시트를 지원하지 않습니다. 이미지로 저장해 직접 공유해주세요.";
+const SAVE_SUCCESS_MESSAGE = "이미지 저장 완료! 승요 판독 결과를 공유해보세요.";
 const LOADING_DURATION_MS = 2200;
 
 function Toast({ message }: { message: string }) {
@@ -142,15 +143,32 @@ export default function Home() {
     if (!cardRef.current || !team) return;
     setSaving(true);
     try {
-      const dataUrl = await toPng(cardRef.current, { pixelRatio: 2 });
-      const link = document.createElement("a");
-      link.download = `승요판독기_${team.id}.png`;
-      link.href = dataUrl;
-      link.click();
+      const blob = await toBlob(cardRef.current, { pixelRatio: 2 });
+      if (!blob) throw new Error("toBlob returned null");
+      const file = new File([blob], `승요판독기_${team.id}.png`, { type: "image/png" });
+
+      // Safari(특히 iOS)는 data: URL에 대한 <a download>를 신뢰할 수 없게 처리해서 다운로드가
+      // 아예 안 되는 경우가 있다. 공유 시트를 지원하는 환경에서는 시트의 "이미지 저장" 액션이
+      // 실제로 사진 앱(갤러리)에 저장되는 유일하게 안정적인 경로라 이걸 우선 사용한다.
+      const nav = navigator as Navigator & { canShare?: (data?: ShareData) => boolean };
+      if (nav.share && nav.canShare?.({ files: [file] })) {
+        await nav.share({ files: [file] });
+      } else {
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.download = file.name;
+        link.href = url;
+        link.click();
+        URL.revokeObjectURL(url);
+      }
+      showToast(SAVE_SUCCESS_MESSAGE);
       track("이미지_저장", { team: team.id });
     } catch (err) {
-      console.error(err);
-      showToast(IMAGE_ERROR_MESSAGE);
+      // 사용자가 공유 시트를 취소한 경우는 에러로 취급하지 않는다
+      if (!(err instanceof DOMException && err.name === "AbortError")) {
+        console.error(err);
+        showToast(IMAGE_ERROR_MESSAGE);
+      }
     } finally {
       setSaving(false);
     }
