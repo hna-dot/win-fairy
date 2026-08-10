@@ -142,7 +142,10 @@ function NextBox({ accent, result, team }: { accent: Accent; result: AnalysisOut
     }
   } else {
     boxLabel = "다음 회피 대상 경기";
-    if (!result.nextGame) {
+    if (!result.condition) {
+      dateLine = "조건 없음";
+      descLine = "그래도 직관 시 주의가 필요합니다";
+    } else if (!result.nextGame) {
       dateLine = "조건에 맞는 예정 경기 없음";
       descLine = "발표된 일정 범위 내에서는 찾지 못함";
     } else {
@@ -188,6 +191,9 @@ function formatUpcomingDate(date: string, homeAway: string): string {
 function footerNote(result: AnalysisOutput): string {
   if (result.status === "완전승요") {
     return `이 결과는 직관 ${result.totalGames}경기 전부 승리를 근거로 하며, 그 외의 통계적 유의미성은 판독기의 알 바 아님.`;
+  }
+  if (result.status === "패배방지" && !result.condition) {
+    return `직관 ${result.totalGames}경기 전부 패배했으나 공통된 조건은 찾지 못함. 그 외의 통계적 유의미성은 판독기의 알 바 아님.`;
   }
   if (result.status === "부분승요" || result.status === "패배방지") {
     return `본 결과는 표본 ${result.coverage ?? result.totalGames}경기를 100% 만족하는 조건이며, 그 외의 통계적 유의미성은 판독기의 알 바 아님.`;
@@ -312,6 +318,22 @@ function VerdictBlock({ result, accent }: { result: AnalysisOutput; accent: Acce
           → 조건 없음. 당신 자체가 승요.
         </span>
         {tieNote}
+      </div>
+    );
+  }
+
+  if (result.status === "패배방지" && !result.condition) {
+    // 대조군(승리) 없이 진 날 전체를 100% 설명하는 조건을 못 찾은 극히 드문 경우.
+    // 조건 탐색 자체는 정상 수행됐고, 이 3~N경기가 공유하는 패턴이 실제로 없는 것.
+    return (
+      <div className="mt-[13px] mb-1 font-serif-kr text-[20px] leading-[1.44] font-black tracking-[-0.01em]">
+        직관간 <span className="verdict-highlight">{result.totalGames}경기 전부 패배.</span>
+        <span className="mt-[5px] block text-[15.5px] font-bold" style={{ color }}>
+          → 반드시 집니다. 피하십시오.
+        </span>
+        <span className="mt-2 block font-mono text-[10px] leading-[1.6] font-normal text-[#5c563f]">
+          참고: 공통된 조건은 찾지 못함.
+        </span>
       </div>
     );
   }

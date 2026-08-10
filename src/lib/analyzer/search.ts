@@ -1,6 +1,7 @@
 // 탐색 알고리즘 (analyzer.py find_forced_condition / _search 포팅)
 // SPEC 3.4: 승요 조건은 커버리지를 최대→최소로 낮춰가며 depth 1~3(예외 시 4)을 탐색.
-// 패배방지 모드는 대칭이지만 대조군이 없어 "진 날 전체를 100% 커버"하는 조건만 채택한다.
+// 패배방지 모드도 완전히 동일한 커버리지 하향 탐색을 쓴다. 다만 대조군(승리)이 없으므로
+// "조건을 만족하는 날 중 승리가 섞이면 안 된다"는 배타 체크만 생략된다.
 
 import { conditionPriorityScore, diversityScore } from "./categories";
 import type { AnalysisRecord, AvoidanceResult, ConditionResult } from "./types";
@@ -137,43 +138,55 @@ export function findForcedCondition(
   return null;
 }
 
-function searchAvoidanceCondition(records: AnalysisRecord[], maxDepth: number): AvoidanceResult | null {
+function searchAvoidanceCondition(
+  records: AnalysisRecord[],
+  maxDepth: number,
+  minCoverageFloor: number,
+): AvoidanceResult | null {
   const losses = records.filter((r) => r.result === "패");
   if (losses.length === 0) return null;
 
   const allFeatureNames = Object.keys(losses[0].features).sort();
-  const candidates: Candidate[] = [];
-  for (let depth = 1; depth <= maxDepth; depth++) {
-    for (const combo of combinations(allFeatureNames, depth)) {
-      const coveredLosses = losses.filter((r) => combo.every((f) => r.features[f]));
-      if (coveredLosses.length !== losses.length) continue; // 대조군 없이 진 날 전체를 100% 커버해야 함
-      candidates.push({
-        condition: combo,
-        coverage: coveredLosses.length,
-        depth,
-        coveredDates: coveredLosses.map((r) => r.date),
-        diversity: diversityScore(combo),
-      });
+  const maxCoverage = losses.length;
+
+  for (let targetCoverage = maxCoverage; targetCoverage >= minCoverageFloor; targetCoverage--) {
+    const candidates: Candidate[] = [];
+    for (let depth = 1; depth <= maxDepth; depth++) {
+      for (const combo of combinations(allFeatureNames, depth)) {
+        const coveredLosses = losses.filter((r) => combo.every((f) => r.features[f]));
+        if (coveredLosses.length < targetCoverage) continue;
+        candidates.push({
+          condition: combo,
+          coverage: coveredLosses.length,
+          depth,
+          coveredDates: coveredLosses.map((r) => r.date),
+          diversity: diversityScore(combo),
+        });
+      }
+    }
+    if (candidates.length > 0) {
+      const best = pickBest(candidates);
+      return { type: "패배방지", ...best };
     }
   }
-  if (candidates.length === 0) return null;
-  const best = pickBest(candidates);
-  return { type: "패배방지", ...best };
+  return null;
 }
 
 /**
  * 패배방지(회피) 조건 탐색 (SPEC 3.4 대칭 로직). 승리 기록이 전혀 없을 때(패 전용)만 호출한다.
- * 대조군이 없으므로 부분 커버리지는 인정하지 않고, 진 날 전체를 100% 설명하는 조건만 채택한다.
+ * 승요 조건 탐색과 완전히 동일하게, 커버리지를 100%에서 minCoverageFloor까지 낮춰가며 찾는다
+ * (대조군이 없어 승/패 배타 체크만 생략될 뿐, 부분 커버리지 인정 여부는 승요와 동일하게 취급).
  */
 export function findAvoidanceCondition(
   records: AnalysisRecord[],
   maxDepth = 3,
+  minCoverageFloor = 1,
   fallbackMaxDepth = 4,
 ): AvoidanceResult | null {
-  const result = searchAvoidanceCondition(records, maxDepth);
+  const result = searchAvoidanceCondition(records, maxDepth, minCoverageFloor);
   if (result !== null) return result;
   if (maxDepth < fallbackMaxDepth) {
-    return searchAvoidanceCondition(records, fallbackMaxDepth);
+    return searchAvoidanceCondition(records, fallbackMaxDepth, minCoverageFloor);
   }
   return null;
 }
