@@ -68,7 +68,7 @@ function Toast({ message }: { message: string }) {
 }
 
 export default function Home() {
-  const { hydrated, teamId, dates, setTeam, toggleDate, reset } = useVisitState();
+  const { teamId, dates, setTeam, toggleDate, reset } = useVisitState();
   const [screen, setScreen] = useState<"select" | "loading" | "result" | "error">("select");
   const [saving, setSaving] = useState(false);
   const [sharing, setSharing] = useState(false);
@@ -191,10 +191,6 @@ export default function Home() {
     } finally {
       setSharing(false);
     }
-  }
-
-  if (!hydrated) {
-    return <main className="min-h-screen bg-page-bg" />;
   }
 
   if (screen === "loading") {
