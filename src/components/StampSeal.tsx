@@ -1,4 +1,7 @@
-// 결과 카드 도장. 잉크 번짐(turbulence displacement) 필터 + 원형 텍스트 경로로 만든 "공식 인증" 인장.
+// 결과 카드 도장. 화면에서는 실시간 SVG 필터(잉크 번짐 feTurbulence)로 그린다 — 이게 원래
+// 디자인이고 화면에서는 전혀 문제없다. 문제는 html-to-image로 이미지 저장/공유할 때: 필터
+// 결과물이 표시 크기 그대로 래스터화된 뒤 저장용으로 확대되며 흐려진다. 그래서 캡처
+// 순간에만(exportMode) 미리 구워둔 고해상도 PNG(public/stamps/*.png)로 바꿔치기한다.
 
 type StampAccent = "gold" | "red" | "stockblue" | "grey";
 
@@ -91,7 +94,34 @@ const STAMPS: Record<StampAccent, StampConfig> = {
   },
 };
 
-export default function StampSeal({ accent, size = 62 }: { accent: StampAccent; size?: number }) {
+const STAMP_SRC: Record<StampAccent, string> = {
+  gold: "/stamps/gold.png",
+  red: "/stamps/red.png",
+  stockblue: "/stamps/stockblue.png",
+  grey: "/stamps/grey.png",
+};
+
+interface Props {
+  accent: StampAccent;
+  size?: number;
+  /** true면 미리 구운 고해상도 PNG(캡처용)를, false(기본)면 화면용 실시간 SVG 필터를 그린다. */
+  exportMode?: boolean;
+}
+
+export default function StampSeal({ accent, size = 62, exportMode = false }: Props) {
+  if (exportMode) {
+    return (
+      // eslint-disable-next-line @next/next/no-img-element -- 고정 로컬 도장 이미지, next/image 최적화 불필요
+      <img
+        src={STAMP_SRC[accent]}
+        alt=""
+        width={size}
+        height={size}
+        style={{ width: size, height: size, mixBlendMode: "multiply" }}
+      />
+    );
+  }
+
   const c = STAMPS[accent];
   return (
     <svg viewBox="0 0 200 200" width={size} height={size} xmlns="http://www.w3.org/2000/svg" style={{ mixBlendMode: "multiply" }}>

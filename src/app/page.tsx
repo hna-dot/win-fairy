@@ -17,6 +17,130 @@ import { useVisitState } from "@/lib/useVisitState";
 const HEADER_GRADIENT = "radial-gradient(130% 100% at 50% 0%, #46545F 0%, #313D48 45%, #1E2830 100%)";
 const ATTEMPT_COUNT_KEY = "seungyo-pandokgi:attempt-count:v1";
 
+// 이미지 저장/공유 캡처 직전에 exportMode로 전환되면서 쓰이는 도장/체크 PNG. 캡처 시점에
+// 처음 로드되면 아직 브라우저에 없어 깨진 이미지로 캡처될 수 있으므로 미리 받아둔다.
+const EXPORT_IMAGE_PATHS = [
+  "/stamps/gold.png",
+  "/stamps/red.png",
+  "/stamps/stockblue.png",
+  "/stamps/grey.png",
+  "/stamps/check-gold.png",
+  "/stamps/check-red.png",
+  "/stamps/check-stockblue.png",
+  "/stamps/check-grey.png",
+];
+
+/** 다음 두 번의 페인트가 지나갈 때까지 기다린다 — exportMode 전환(SVG->PNG)이 DOM에
+ * 실제로 반영된 뒤에 캡처하기 위함. */
+function waitForNextPaint(): Promise<void> {
+  return new Promise((resolve) => {
+    requestAnimationFrame(() => requestAnimationFrame(() => resolve()));
+  });
+}
+
+// html-to-image는 각 DOM 노드를 복제하며 getComputedStyle(node).cssText를 그대로 복사하는데,
+// 일부 브라우저(사파리/iOS 포함, WebKit/Blink 버전에 따라)는 cssText가 빈 문자열을 반환하는
+// 알려진 버그가 있다. 이 경우 라이브러리는 속성 이름 목록을 하나씩 순회하며 값을 복사하는
+// 폴백으로 넘어가는데, 그 목록이 브라우저마다 달라져서 카드의 flex/margin/padding 같은
+// 레이아웃 속성이 통째로 누락되고 텍스트가 전부 겹쳐 보이는 버그로 이어질 수 있다.
+// (일부 기기에서 저장 이미지가 깨지는 문제의 원인으로 추정됨.) 브라우저 기본 목록에
+// 의존하지 않도록 레이아웃에 필요한 속성을 명시적으로 지정해 폴백 경로에서도 항상
+// 동일하게 동작하도록 한다.
+const CAPTURE_STYLE_PROPERTIES = [
+  "display",
+  "position",
+  "top",
+  "right",
+  "bottom",
+  "left",
+  "inset",
+  "z-index",
+  "box-sizing",
+  "width",
+  "height",
+  "min-width",
+  "min-height",
+  "max-width",
+  "max-height",
+  "aspect-ratio",
+  "overflow",
+  "overflow-x",
+  "overflow-y",
+  "flex",
+  "flex-grow",
+  "flex-shrink",
+  "flex-basis",
+  "flex-direction",
+  "flex-wrap",
+  "align-items",
+  "align-content",
+  "align-self",
+  "justify-content",
+  "justify-items",
+  "justify-self",
+  "gap",
+  "row-gap",
+  "column-gap",
+  "grid-template-columns",
+  "grid-template-rows",
+  "grid-column",
+  "grid-row",
+  "margin",
+  "margin-top",
+  "margin-right",
+  "margin-bottom",
+  "margin-left",
+  "padding",
+  "padding-top",
+  "padding-right",
+  "padding-bottom",
+  "padding-left",
+  "border",
+  "border-width",
+  "border-style",
+  "border-color",
+  "border-top",
+  "border-right",
+  "border-bottom",
+  "border-left",
+  "border-radius",
+  "background",
+  "background-color",
+  "background-image",
+  "background-position",
+  "background-size",
+  "background-repeat",
+  "color",
+  "opacity",
+  "mix-blend-mode",
+  "box-shadow",
+  "font",
+  "font-family",
+  "font-size",
+  "font-weight",
+  "font-style",
+  "line-height",
+  "letter-spacing",
+  "text-align",
+  "text-transform",
+  "text-decoration",
+  "text-overflow",
+  "white-space",
+  "word-break",
+  "vertical-align",
+  "transform",
+  "transform-origin",
+  "object-fit",
+  "object-position",
+  "pointer-events",
+  "visibility",
+  "clip-path",
+  "filter",
+  "stroke",
+  "stroke-width",
+  "fill",
+];
+
 /** 이 브라우저에서 지금까지 판독을 시도한 누적 횟수. Vercel Analytics 이벤트 속성으로 붙여서
  * "여러 번 판독한 사람이 몇 명인지"를 대시보드에서 가늠할 수 있게 한다. */
 function bumpAttemptCount(): number {
@@ -62,12 +186,20 @@ export default function Home() {
   const { teamId, dates, setTeam, toggleDate, reset } = useVisitState();
   const [screen, setScreen] = useState<"select" | "loading" | "result" | "error">("select");
   const [sharing, setSharing] = useState(false);
+  const [exportMode, setExportMode] = useState(false);
   const [attemptedWithoutTeam, setAttemptedWithoutTeam] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
   const cardRef = useRef<HTMLDivElement>(null);
   const toastTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const loadingTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const today = getAnalysisToday();
+
+  useEffect(() => {
+    for (const src of EXPORT_IMAGE_PATHS) {
+      const img = new Image();
+      img.src = src;
+    }
+  }, []);
 
   const team = teamId ? getTeamMeta(teamId) : undefined;
 
@@ -131,8 +263,17 @@ export default function Home() {
   async function handleShare() {
     if (!cardRef.current || !team) return;
     setSharing(true);
+    setExportMode(true);
     try {
-      const blob = await toBlob(cardRef.current, { pixelRatio: 2 });
+      await waitForNextPaint();
+      if (document.fonts?.ready) await document.fonts.ready;
+      if (!cardRef.current) return;
+      const captureOptions = { pixelRatio: 2, includeStyleProperties: CAPTURE_STYLE_PROPERTIES };
+      // 일부 기기(주로 iOS 사파리)는 캡처를 한 번 "예열"해야 두 번째 시도부터 레이아웃이
+      // 정상적으로 캡처되는 문제가 보고돼 있어(html-to-image의 알려진 한계), 결과는 버리고
+      // 실제 저장/공유에는 두 번째 캡처만 사용한다.
+      await toBlob(cardRef.current, captureOptions);
+      const blob = await toBlob(cardRef.current, captureOptions);
       if (!blob) throw new Error("toBlob returned null");
       const file = new File([blob], `승요판독기_${team.id}.png`, { type: "image/png" });
 
@@ -162,6 +303,7 @@ export default function Home() {
         showToast(IMAGE_ERROR_MESSAGE);
       }
     } finally {
+      setExportMode(false);
       setSharing(false);
     }
   }
@@ -185,7 +327,7 @@ export default function Home() {
   if (screen === "result" && team && result) {
     return (
       <main className="mx-auto min-h-screen max-w-[430px] bg-page-bg px-4 py-7">
-        <ResultCard ref={cardRef} team={team} result={result} today={today} />
+        <ResultCard ref={cardRef} team={team} result={result} today={today} exportMode={exportMode} />
         <div className="mt-5 flex items-center justify-center gap-4">
           <button
             type="button"

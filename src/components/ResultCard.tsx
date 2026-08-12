@@ -14,6 +14,8 @@ interface Props {
   team: TeamMeta;
   result: AnalysisOutput;
   today: string;
+  /** true면 도장/체크를 미리 구운 고해상도 PNG로 그린다(이미지 저장·공유 캡처 직전에만 켠다). */
+  exportMode?: boolean;
 }
 
 type Accent = "gold" | "red" | "stockblue" | "grey";
@@ -23,6 +25,15 @@ const ACCENT_HEX: Record<Accent, string> = {
   red: "var(--red)",
   stockblue: "var(--stockblue)",
   grey: "var(--grey)",
+};
+
+// StampSeal과 동일한 이유로 미리 구운 고해상도 PNG를 쓴다(html-to-image 저장 시 SVG 필터
+// 블러 방지). public/stamps/check-*.png 참고.
+const CHECK_SRC: Record<Accent, string> = {
+  gold: "/stamps/check-gold.png",
+  red: "/stamps/check-red.png",
+  stockblue: "/stamps/check-stockblue.png",
+  grey: "/stamps/check-grey.png",
 };
 
 const EYEBROW = "승 요 판 독 결 과";
@@ -86,7 +97,7 @@ function RarityRow({ accent, label, result }: { accent: Accent; label: string; r
   );
 }
 
-const EVIDENCE_MAX_ROWS = 6;
+const EVIDENCE_MAX_ROWS = 5;
 
 function EvidenceBlock({ teamId, result }: { teamId: string; result: AnalysisOutput }) {
   if (!result.coveredDates || result.coveredDates.length === 0) return null;
@@ -121,7 +132,17 @@ function EvidenceBlock({ teamId, result }: { teamId: string; result: AnalysisOut
   );
 }
 
-function NextBox({ accent, result, team }: { accent: Accent; result: AnalysisOutput; team: TeamMeta }) {
+function NextBox({
+  accent,
+  result,
+  team,
+  exportMode,
+}: {
+  accent: Accent;
+  result: AnalysisOutput;
+  team: TeamMeta;
+  exportMode: boolean;
+}) {
   const color = ACCENT_HEX[accent];
   let boxLabel: string;
   let dateLine: string;
@@ -163,22 +184,27 @@ function NextBox({ accent, result, team }: { accent: Accent; result: AnalysisOut
         <div className="mt-[3px] font-display text-[13.5px] font-bold text-ink">{dateLine}</div>
         <div className="mt-[1px] text-[9.5px] text-[#5c563f]">{descLine}</div>
       </div>
-      <svg viewBox="0 0 28 28" className="h-[22px] w-[22px] shrink-0">
-        <defs>
-          <filter id="sy-chk-d1" x="-25%" y="-25%" width="150%" height="150%">
-            <feTurbulence type="fractalNoise" baseFrequency="1.1" numOctaves={3} seed={9} result="n1" />
-            <feDisplacementMap in="SourceGraphic" in2="n1" scale="0.9" xChannelSelector="R" yChannelSelector="G" result="dsp" />
-            <feTurbulence type="fractalNoise" baseFrequency="0.28" numOctaves={4} seed={6} result="n2" />
-            <feColorMatrix in="n2" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  1.4 0 0 0 -0.44" result="spek" />
-            <feComposite in="dsp" in2="spek" operator="out" />
-          </filter>
-        </defs>
-        <path
-          filter="url(#sy-chk-d1)"
-          d="M3.8 14.2 L6.3 12.1 C8.2 13.8 10.1 16.5 11.9 19.6 C15.2 13.2 19.1 8.2 24.2 3.9 L25.6 5.9 C20.7 11.1 16.1 17.6 13.1 24.3 L10.9 24.1 C9.1 20.6 6.4 16.8 3.8 14.2 Z"
-          fill={color}
-        />
-      </svg>
+      {exportMode ? (
+        // eslint-disable-next-line @next/next/no-img-element -- 고정 로컬 체크 이미지, next/image 최적화 불필요
+        <img src={CHECK_SRC[accent]} alt="" width={22} height={22} className="h-[22px] w-[22px] shrink-0" />
+      ) : (
+        <svg viewBox="0 0 28 28" className="h-[22px] w-[22px] shrink-0">
+          <defs>
+            <filter id="sy-chk-d1" x="-25%" y="-25%" width="150%" height="150%">
+              <feTurbulence type="fractalNoise" baseFrequency="1.1" numOctaves={3} seed={9} result="n1" />
+              <feDisplacementMap in="SourceGraphic" in2="n1" scale="0.9" xChannelSelector="R" yChannelSelector="G" result="dsp" />
+              <feTurbulence type="fractalNoise" baseFrequency="0.28" numOctaves={4} seed={6} result="n2" />
+              <feColorMatrix in="n2" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  1.4 0 0 0 -0.44" result="spek" />
+              <feComposite in="dsp" in2="spek" operator="out" />
+            </filter>
+          </defs>
+          <path
+            filter="url(#sy-chk-d1)"
+            d="M3.8 14.2 L6.3 12.1 C8.2 13.8 10.1 16.5 11.9 19.6 C15.2 13.2 19.1 8.2 24.2 3.9 L25.6 5.9 C20.7 11.1 16.1 17.6 13.1 24.3 L10.9 24.1 C9.1 20.6 6.4 16.8 3.8 14.2 Z"
+            fill={color}
+          />
+        </svg>
+      )}
     </div>
   );
 }
@@ -215,7 +241,7 @@ function breakAfter(text: string, char: string): ReactNode {
   );
 }
 
-const ResultCard = forwardRef<HTMLDivElement, Props>(function ResultCard({ team, result, today }, ref) {
+const ResultCard = forwardRef<HTMLDivElement, Props>(function ResultCard({ team, result, today, exportMode = false }, ref) {
   const meta = statusMeta(result.status);
   const [g1, g2, g3] = deriveHeaderGradient(team.colorMain);
   const issueNumber = buildIssueNumber(team.id, result.coveredDates ?? [], result.status);
@@ -275,7 +301,7 @@ const ResultCard = forwardRef<HTMLDivElement, Props>(function ResultCard({ team,
               <RarityRow accent={meta.accent} label="희귀도" result={result} />
             )}
             <EvidenceBlock teamId={team.id} result={result} />
-            <NextBox accent={meta.accent} result={result} team={team} />
+            <NextBox accent={meta.accent} result={result} team={team} exportMode={exportMode} />
           </>
         )}
 
@@ -284,7 +310,7 @@ const ResultCard = forwardRef<HTMLDivElement, Props>(function ResultCard({ team,
         </div>
 
         <div className="pointer-events-none absolute top-[44px] right-[10px] opacity-95">
-          <StampSeal accent={meta.accent} size={124} />
+          <StampSeal accent={meta.accent} size={124} exportMode={exportMode} />
         </div>
       </div>
 
