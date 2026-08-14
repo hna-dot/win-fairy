@@ -13,12 +13,9 @@
 # testing
 /coverage
 
-# next.js
-/.next/
-/out/
-
-# production
-/build
+# vite / toss mini app build output
+/dist/
+*.ait
 
 # misc
 .DS_Store

@@ -1,4 +1,4 @@
-"use client";
+
 
 import { TEAMS } from "@/lib/data/teams";
 

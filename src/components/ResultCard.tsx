@@ -1,4 +1,4 @@
-"use client";
+
 
 import { forwardRef, type ReactNode } from "react";
 import type { AnalysisOutput } from "@/lib/analyzer";

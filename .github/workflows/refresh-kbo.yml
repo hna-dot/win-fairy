@@ -23,6 +23,13 @@ jobs:
 
       - run: npm run fetch:kbo
 
+      - name: Build and deploy Toss mini app
+        env:
+          AIT_API_KEY: ${{ secrets.AIT_API_KEY }}
+        run: |
+          npm run build
+          npx ait deploy --api-key "$AIT_API_KEY" --memo "KBO 일정/결과 갱신 $(date -u +%Y-%m-%d)"
+
       - name: Commit and push if changed
         run: |
           git config user.name "github-actions[bot]"

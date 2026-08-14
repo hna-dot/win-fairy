@@ -1,6 +1,11 @@
 @import "tailwindcss";
 
 :root {
+  /* next/font이 주입하던 CSS 변수를 직접 선언 */
+  --font-chakra-petch: 'Chakra Petch', sans-serif;
+  --font-noto-serif-kr: 'Noto Serif KR', serif;
+  --font-ibm-plex-mono: 'IBM Plex Mono', monospace;
+
   --ink: #0b1220;
   --paper: #f6f1e4;
   --line: #d8cdb0;
