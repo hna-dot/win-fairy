@@ -8,7 +8,7 @@ import ResultCard from "@/components/ResultCard";
 import TeamSelector from "@/components/TeamSelector";
 import VisitCalendar from "@/components/VisitCalendar";
 import { analyzeVisits } from "@/lib/analyzer";
-import { getAnalysisToday, getTeamGames, resolveVisitRecords } from "@/lib/data/schedule";
+import { getAnalysisToday, getTeamGames, refreshSchedule, resolveVisitRecords } from "@/lib/data/schedule";
 import { getTeamMeta } from "@/lib/data/teams";
 import { useVisitState } from "@/lib/useVisitState";
 
@@ -107,6 +107,8 @@ function ShareIcon() {
 export default function App() {
   const { teamId, dates, setTeam, toggleDate, reset } = useVisitState();
   const [screen, setScreen] = useState<"select" | "loading" | "result" | "error">("select");
+  // 앱 시작 시 GitHub Raw에서 최신 KBO 데이터 fetch. 완료되면 scheduleVersion이 올라 분석이 재실행된다.
+  const [scheduleVersion, setScheduleVersion] = useState(0);
   const [sharing, setSharing] = useState(false);
   const [exportMode, setExportMode] = useState(false);
   const [attemptedWithoutTeam, setAttemptedWithoutTeam] = useState(false);
@@ -115,6 +117,10 @@ export default function App() {
   const toastTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const loadingTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const today = getAnalysisToday();
+
+  useEffect(() => {
+    refreshSchedule().then(() => setScheduleVersion((v) => v + 1));
+  }, []);
 
   useEffect(() => {
     for (const src of EXPORT_IMAGE_PATHS) {
@@ -135,7 +141,7 @@ export default function App() {
       console.error(err);
       return { result: null, failed: true };
     }
-  }, [teamId, dates, today]);
+  }, [teamId, dates, today, scheduleVersion]);
   const result = analysis.result;
 
   useEffect(() => {
