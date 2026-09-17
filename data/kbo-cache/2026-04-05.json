@@ -16,6 +16,7 @@
     "cancel": false,
     "suspended": false,
     "reversedHomeAway": true,
+    "neutralGround": false,
     "homeTeamEmblemUrl": "https://sports-phinf.pstatic.net/team/kbo/default/OB.png",
     "awayTeamEmblemUrl": "https://sports-phinf.pstatic.net/team/kbo/default/HH.png",
     "widgetEnable": false
@@ -37,6 +38,7 @@
     "cancel": false,
     "suspended": false,
     "reversedHomeAway": true,
+    "neutralGround": false,
     "homeTeamEmblemUrl": "https://sports-phinf.pstatic.net/team/kbo/default/WO.png",
     "awayTeamEmblemUrl": "https://sports-phinf.pstatic.net/team/kbo/default/LG.png",
     "widgetEnable": false
@@ -58,6 +60,7 @@
     "cancel": false,
     "suspended": false,
     "reversedHomeAway": true,
+    "neutralGround": false,
     "homeTeamEmblemUrl": "https://sports-phinf.pstatic.net/team/kbo/default/HT.png",
     "awayTeamEmblemUrl": "https://sports-phinf.pstatic.net/team/kbo/default/NC.png",
     "widgetEnable": false
@@ -79,6 +82,7 @@
     "cancel": false,
     "suspended": false,
     "reversedHomeAway": true,
+    "neutralGround": false,
     "homeTeamEmblemUrl": "https://sports-phinf.pstatic.net/team/kbo/default/LT.png",
     "awayTeamEmblemUrl": "https://sports-phinf.pstatic.net/team/kbo/default/SK.png",
     "widgetEnable": false
@@ -100,6 +104,7 @@
     "cancel": false,
     "suspended": false,
     "reversedHomeAway": true,
+    "neutralGround": false,
     "homeTeamEmblemUrl": "https://sports-phinf.pstatic.net/team/kbo/default/KT.png",
     "awayTeamEmblemUrl": "https://sports-phinf.pstatic.net/team/kbo/default/SS.png",
     "widgetEnable": false
@@ -121,6 +126,7 @@
     "cancel": false,
     "suspended": false,
     "reversedHomeAway": true,
+    "neutralGround": false,
     "homeTeamEmblemUrl": "https://sports-phinf.pstatic.net/team/kbo/default/SK.png",
     "awayTeamEmblemUrl": "https://sports-phinf.pstatic.net/team/kbo/default/HH.png",
     "widgetEnable": false
@@ -142,6 +148,7 @@
     "cancel": false,
     "suspended": false,
     "reversedHomeAway": true,
+    "neutralGround": false,
     "homeTeamEmblemUrl": "https://sports-phinf.pstatic.net/team/kbo/default/LT.png",
     "awayTeamEmblemUrl": "https://sports-phinf.pstatic.net/team/kbo/default/KT.png",
     "widgetEnable": false
@@ -163,6 +170,7 @@
     "cancel": false,
     "suspended": false,
     "reversedHomeAway": true,
+    "neutralGround": false,
     "homeTeamEmblemUrl": "https://sports-phinf.pstatic.net/team/kbo/default/NC.png",
     "awayTeamEmblemUrl": "https://sports-phinf.pstatic.net/team/kbo/default/LG.png",
     "widgetEnable": false
@@ -184,6 +192,7 @@
     "cancel": false,
     "suspended": false,
     "reversedHomeAway": true,
+    "neutralGround": false,
     "homeTeamEmblemUrl": "https://sports-phinf.pstatic.net/team/kbo/default/HT.png",
     "awayTeamEmblemUrl": "https://sports-phinf.pstatic.net/team/kbo/default/SS.png",
     "widgetEnable": false
@@ -205,6 +214,7 @@
     "cancel": false,
     "suspended": false,
     "reversedHomeAway": true,
+    "neutralGround": false,
     "homeTeamEmblemUrl": "https://sports-phinf.pstatic.net/team/kbo/default/OB.png",
     "awayTeamEmblemUrl": "https://sports-phinf.pstatic.net/team/kbo/default/WO.png",
     "widgetEnable": false
@@ -226,6 +236,7 @@
     "cancel": false,
     "suspended": false,
     "reversedHomeAway": true,
+    "neutralGround": false,
     "homeTeamEmblemUrl": "https://sports-phinf.pstatic.net/team/kbo/default/SK.png",
     "awayTeamEmblemUrl": "https://sports-phinf.pstatic.net/team/kbo/default/HH.png",
     "widgetEnable": false
@@ -247,6 +258,7 @@
     "cancel": false,
     "suspended": false,
     "reversedHomeAway": true,
+    "neutralGround": false,
     "homeTeamEmblemUrl": "https://sports-phinf.pstatic.net/team/kbo/default/LT.png",
     "awayTeamEmblemUrl": "https://sports-phinf.pstatic.net/team/kbo/default/KT.png",
     "widgetEnable": false
@@ -268,6 +280,7 @@
     "cancel": false,
     "suspended": false,
     "reversedHomeAway": true,
+    "neutralGround": false,
     "homeTeamEmblemUrl": "https://sports-phinf.pstatic.net/team/kbo/default/NC.png",
     "awayTeamEmblemUrl": "https://sports-phinf.pstatic.net/team/kbo/default/LG.png",
     "widgetEnable": false
@@ -289,6 +302,7 @@
     "cancel": false,
     "suspended": false,
     "reversedHomeAway": true,
+    "neutralGround": false,
     "homeTeamEmblemUrl": "https://sports-phinf.pstatic.net/team/kbo/default/HT.png",
     "awayTeamEmblemUrl": "https://sports-phinf.pstatic.net/team/kbo/default/SS.png",
     "widgetEnable": false
@@ -310,6 +324,7 @@
     "cancel": false,
     "suspended": false,
     "reversedHomeAway": true,
+    "neutralGround": false,
     "homeTeamEmblemUrl": "https://sports-phinf.pstatic.net/team/kbo/default/OB.png",
     "awayTeamEmblemUrl": "https://sports-phinf.pstatic.net/team/kbo/default/WO.png",
     "widgetEnable": false
@@ -331,6 +346,7 @@
     "cancel": true,
     "suspended": false,
     "reversedHomeAway": true,
+    "neutralGround": false,
     "homeTeamEmblemUrl": "https://sports-phinf.pstatic.net/team/kbo/default/SK.png",
     "awayTeamEmblemUrl": "https://sports-phinf.pstatic.net/team/kbo/default/HH.png",
     "widgetEnable": false
@@ -352,6 +368,7 @@
     "cancel": true,
     "suspended": false,
     "reversedHomeAway": true,
+    "neutralGround": false,
     "homeTeamEmblemUrl": "https://sports-phinf.pstatic.net/team/kbo/default/LT.png",
     "awayTeamEmblemUrl": "https://sports-phinf.pstatic.net/team/kbo/default/KT.png",
     "widgetEnable": false
@@ -373,6 +390,7 @@
     "cancel": true,
     "suspended": false,
     "reversedHomeAway": true,
+    "neutralGround": false,
     "homeTeamEmblemUrl": "https://sports-phinf.pstatic.net/team/kbo/default/NC.png",
     "awayTeamEmblemUrl": "https://sports-phinf.pstatic.net/team/kbo/default/LG.png",
     "widgetEnable": false
@@ -394,6 +412,7 @@
     "cancel": true,
     "suspended": false,
     "reversedHomeAway": true,
+    "neutralGround": false,
     "homeTeamEmblemUrl": "https://sports-phinf.pstatic.net/team/kbo/default/HT.png",
     "awayTeamEmblemUrl": "https://sports-phinf.pstatic.net/team/kbo/default/SS.png",
     "widgetEnable": false
@@ -415,6 +434,7 @@
     "cancel": true,
     "suspended": false,
     "reversedHomeAway": true,
+    "neutralGround": false,
     "homeTeamEmblemUrl": "https://sports-phinf.pstatic.net/team/kbo/default/OB.png",
     "awayTeamEmblemUrl": "https://sports-phinf.pstatic.net/team/kbo/default/WO.png",
     "widgetEnable": false
@@ -436,6 +456,7 @@
     "cancel": false,
     "suspended": false,
     "reversedHomeAway": true,
+    "neutralGround": false,
     "homeTeamEmblemUrl": "https://sports-phinf.pstatic.net/team/kbo/default/HH.png",
     "awayTeamEmblemUrl": "https://sports-phinf.pstatic.net/team/kbo/default/HT.png",
     "widgetEnable": false
@@ -457,6 +478,7 @@
     "cancel": false,
     "suspended": false,
     "reversedHomeAway": true,
+    "neutralGround": false,
     "homeTeamEmblemUrl": "https://sports-phinf.pstatic.net/team/kbo/default/WO.png",
     "awayTeamEmblemUrl": "https://sports-phinf.pstatic.net/team/kbo/default/LT.png",
     "widgetEnable": false
@@ -478,6 +500,7 @@
     "cancel": false,
     "suspended": false,
     "reversedHomeAway": true,
+    "neutralGround": false,
     "homeTeamEmblemUrl": "https://sports-phinf.pstatic.net/team/kbo/default/SS.png",
     "awayTeamEmblemUrl": "https://sports-phinf.pstatic.net/team/kbo/default/NC.png",
     "widgetEnable": false
@@ -499,6 +522,7 @@
     "cancel": false,
     "suspended": false,
     "reversedHomeAway": true,
+    "neutralGround": false,
     "homeTeamEmblemUrl": "https://sports-phinf.pstatic.net/team/kbo/default/KT.png",
     "awayTeamEmblemUrl": "https://sports-phinf.pstatic.net/team/kbo/default/OB.png",
     "widgetEnable": false
@@ -520,6 +544,7 @@
     "cancel": false,
     "suspended": false,
     "reversedHomeAway": true,
+    "neutralGround": false,
     "homeTeamEmblemUrl": "https://sports-phinf.pstatic.net/team/kbo/default/LG.png",
     "awayTeamEmblemUrl": "https://sports-phinf.pstatic.net/team/kbo/default/SK.png",
     "widgetEnable": false
@@ -541,6 +566,7 @@
     "cancel": false,
     "suspended": false,
     "reversedHomeAway": true,
+    "neutralGround": false,
     "homeTeamEmblemUrl": "https://sports-phinf.pstatic.net/team/kbo/default/HH.png",
     "awayTeamEmblemUrl": "https://sports-phinf.pstatic.net/team/kbo/default/HT.png",
     "widgetEnable": false
@@ -562,6 +588,7 @@
     "cancel": false,
     "suspended": false,
     "reversedHomeAway": true,
+    "neutralGround": false,
     "homeTeamEmblemUrl": "https://sports-phinf.pstatic.net/team/kbo/default/WO.png",
     "awayTeamEmblemUrl": "https://sports-phinf.pstatic.net/team/kbo/default/LT.png",
     "widgetEnable": false
@@ -583,6 +610,7 @@
     "cancel": false,
     "suspended": false,
     "reversedHomeAway": true,
+    "neutralGround": false,
     "homeTeamEmblemUrl": "https://sports-phinf.pstatic.net/team/kbo/default/SS.png",
     "awayTeamEmblemUrl": "https://sports-phinf.pstatic.net/team/kbo/default/NC.png",
     "widgetEnable": false
@@ -604,6 +632,7 @@
     "cancel": false,
     "suspended": false,
     "reversedHomeAway": true,
+    "neutralGround": false,
     "homeTeamEmblemUrl": "https://sports-phinf.pstatic.net/team/kbo/default/KT.png",
     "awayTeamEmblemUrl": "https://sports-phinf.pstatic.net/team/kbo/default/OB.png",
     "widgetEnable": false
@@ -625,6 +654,7 @@
     "cancel": false,
     "suspended": false,
     "reversedHomeAway": true,
+    "neutralGround": false,
     "homeTeamEmblemUrl": "https://sports-phinf.pstatic.net/team/kbo/default/LG.png",
     "awayTeamEmblemUrl": "https://sports-phinf.pstatic.net/team/kbo/default/SK.png",
     "widgetEnable": false
