@@ -1,1 +1,24 @@
-[]
+[
+  {
+    "gameId": "55551101HTSS02026",
+    "categoryId": "kbo",
+    "gameDate": "2026-11-01",
+    "gameDateTime": "2026-11-01T14:00:00",
+    "homeTeamCode": "SS",
+    "homeTeamName": "삼성",
+    "homeTeamScore": 0,
+    "awayTeamCode": "HT",
+    "awayTeamName": "KIA",
+    "awayTeamScore": 0,
+    "winner": "DRAW",
+    "statusCode": "BEFORE",
+    "statusInfo": "경기전",
+    "cancel": false,
+    "suspended": false,
+    "reversedHomeAway": true,
+    "neutralGround": false,
+    "homeTeamEmblemUrl": "https://sports-phinf.pstatic.net/team/kbo/default/SS.png",
+    "awayTeamEmblemUrl": "https://sports-phinf.pstatic.net/team/kbo/default/HT.png",
+    "widgetEnable": false
+  }
+]
